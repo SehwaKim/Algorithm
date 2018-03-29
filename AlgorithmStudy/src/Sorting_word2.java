@@ -20,10 +20,10 @@ public class Sorting_word2 {
 
         //HashSet을 array로
         Object[] str = hs.toArray();
-        Arrays.sort(str);
+        Arrays.sort(str);//사전순
 
         Object tmp;
-        for(int i=0;i<str.length-1;i++){
+        for(int i=0;i<str.length-1;i++){//사전순으로 정렬된 상태에서 길이순 버블정렬
             for(int j=0;j<str.length-1-i;j++){
 
                 if(((String)str[j]).length()>((String)str[j+1]).length()){
