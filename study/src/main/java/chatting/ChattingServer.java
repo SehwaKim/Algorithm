@@ -6,27 +6,25 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ChattingServer {
-    public static void main(String[] args) {
+    private static List<Socket> list = new ArrayList<Socket>();
+
+    public static void main(String[] args) throws Exception {
         ServerSocket server = null;
         try{
-            server = new ServerSocket(8080);
-            System.out.println("client를 기다립니다.");
+            server = new ServerSocket(9090);
 
+            Socket client = null;
             while(true) {
-                Socket client = server.accept();
+                client = server.accept();
+                list.add(client);
 
                 new Thread(() -> {
                     try {
-                        sendMsg(client);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }).start();
-
-                new Thread(()->{
-                    try {
+                        broadcast(client);
                         recieveMsg(client);
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -44,7 +42,7 @@ public class ChattingServer {
         }
     }
 
-    private static void sendMsg(Socket client) throws IOException {
+    private void broadcast(Socket client) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         PrintWriter pw = new PrintWriter(client.getOutputStream());
         String line = "";
@@ -59,7 +57,7 @@ public class ChattingServer {
         br.close();
     }
 
-    private static void recieveMsg(Socket client) throws IOException {
+    private void recieveMsg(Socket client) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
         String line = "";
         while((line = br.readLine()) != null) {
