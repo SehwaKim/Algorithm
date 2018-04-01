@@ -26,4 +26,10 @@ public class BoardListServlet extends HttpServlet {
         RequestDispatcher requestDispatcher = req.getRequestDispatcher("/list.jsp");
         requestDispatcher.forward(req, resp);
     }
+
+    @Override
+    public void destroy() {
+        BoardService boardService = BoardService.getBoardService();
+        boardService.save();
+    }
 }
