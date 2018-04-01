@@ -1,3 +1,7 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+         pageEncoding="UTF-8" isELIgnored="false"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -26,6 +30,22 @@
                 RegDate
             </td>
         </tr>
+        <c:forEach items="${iter}" var="b">
+            <tr>
+                <td width="50">
+                    ${b.no}
+                </td>
+                <td width="250">
+                    ${b.subject}
+                </td>
+                <td width="100">
+                    ${b.name}
+                </td>
+                <td width="100">
+                    ${b.regdate}
+                </td>
+            </tr>
+        </c:forEach>
     </table>
 </body>
 </html>

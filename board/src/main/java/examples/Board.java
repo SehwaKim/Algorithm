@@ -1,12 +1,14 @@
 package examples;
 
 import java.io.Serializable;
+import java.util.Date;
 
 public class Board implements Serializable {
     private int no;
     private String name;
+    private String subject;
     private String content;
-    private String regDate;
+    private Date regdate;
 
     public int getNo() {
         return no;
@@ -24,6 +26,14 @@ public class Board implements Serializable {
         this.name = name;
     }
 
+    public String getSubject() {
+        return subject;
+    }
+
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
+
     public String getContent() {
         return content;
     }
@@ -32,11 +42,11 @@ public class Board implements Serializable {
         this.content = content;
     }
 
-    public String getRegDate() {
-        return regDate;
+    public Date getRegdate() {
+        return regdate;
     }
 
-    public void setRegDate(String regDate) {
-        this.regDate = regDate;
+    public void setRegdate(Date regdate) {
+        this.regdate = regdate;
     }
 }
