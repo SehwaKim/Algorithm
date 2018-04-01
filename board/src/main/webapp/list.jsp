@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <style>
+        .tb_board{
+            border: 1px solid black;
+        }
+    </style>
 </head>
 <body>
     <h2>Board</h2>
-    <input type="button" value="Go to Write">
+    <input type="button" value="Go to Write" onclick="location.href='/writeform'">
     <br>
-    <table>
+    <table class="tb_board">
         <tr>
             <td width="50">
                 no.
