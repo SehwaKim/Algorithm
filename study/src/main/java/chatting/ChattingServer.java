@@ -9,10 +9,10 @@ import java.util.List;
 public class ChattingServer {
     private static List<Socket> list = new ArrayList<Socket>();
 
-    public static void main(String[] args) throws Exception {
+    public ChattingServer(){
         ServerSocket server = null;
         try{
-            server = new ServerSocket(9090);
+            server = new ServerSocket(8080);
 
             Socket client = null;
             while(true) {
@@ -40,7 +40,7 @@ public class ChattingServer {
         }
     }
 
-    private synchronized static void broadcast(String line) {
+    private synchronized void broadcast(String line) {
         for(Socket socket : list){
             PrintWriter pw = null;
             try {
@@ -53,7 +53,7 @@ public class ChattingServer {
         }
     }
 
-    private static void recieveMsg(InputStream in) throws IOException {
+    private void recieveMsg(InputStream in) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(in));
         String line = "";
         /*while((line = br.readLine()) != null) {
@@ -62,11 +62,10 @@ public class ChattingServer {
             }
             System.out.println(line);
         }*/
-        while(true){
-            if ("quit".equals(line)) {
+        while ((line = br.readLine()) != null) {
+            if ("quit".equals(line)) { // quit 못옴 고쳐야됨
                 break;
             }
-            line = br.readLine();
             System.out.println(line);
             broadcast(line);
         }
