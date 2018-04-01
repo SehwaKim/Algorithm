@@ -3,8 +3,9 @@ package chatting;
 import java.io.*;
 import java.net.Socket;
 
-public class ChattingClient {
-    public static void main(String[] args) throws IOException {
+public class ChattingClient implements Runnable {
+
+    public void run(){
         try {
             Socket socket = new Socket("localhost",8080);
             System.out.println("서버에 접속되었습니다.");
@@ -28,10 +29,9 @@ public class ChattingClient {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-
     }
 
-    public static void sendMsg(OutputStream out) throws IOException {
+    public void sendMsg(OutputStream out) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         PrintWriter pw = new PrintWriter(out);
 
@@ -48,7 +48,7 @@ public class ChattingClient {
         br.close();
     }
 
-    public static void recieveMsg(InputStream in) throws IOException {
+    public void recieveMsg(InputStream in) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(in));
 
         String line = "";
