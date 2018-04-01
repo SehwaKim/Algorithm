@@ -13,9 +13,17 @@ public class BoardViewServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("text/html");
-        int no = 0;
 
-        //RequestDispatcher requestDispatcher = req.getRequestDispatcher("/view.jsp?no="+no);
+        // no
+        String noStr = req.getParameter("no");
+        int no = Integer.parseInt(noStr);
+
+        // 게시글 가져오기
+        BoardService boardService = BoardService.getBoardService();
+        Board board = boardService.getBoard(no);
+
+        req.setAttribute("board", board);
+
         RequestDispatcher requestDispatcher = req.getRequestDispatcher("/view.jsp");
         requestDispatcher.forward(req, resp);
     }

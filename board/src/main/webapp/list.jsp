@@ -1,7 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
          pageEncoding="UTF-8" isELIgnored="false"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -36,7 +35,7 @@
                     ${b.no}
                 </td>
                 <td width="250">
-                    ${b.subject}
+                    <a href="/view?no=${b.no}">${b.subject}</a>
                 </td>
                 <td width="100">
                     ${b.name}
