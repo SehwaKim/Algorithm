@@ -24,5 +24,6 @@
         <td>${board.content}</td>
     </tr>
 </table>
+<input type="button" value="go back" onclick="location.href='/list'">
 </body>
 </html>
