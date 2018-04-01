@@ -9,8 +9,21 @@ public class ChattingClient {
             Socket socket = new Socket("localhost",8080);
             System.out.println("서버에 접속되었습니다.");
 
-            //sendMsg();
-            //recieveMsg();
+            new Thread(()->{
+                try {
+                    sendMsg(socket.getOutputStream());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }).start();
+
+            new Thread(()->{
+                try {
+                    recieveMsg(socket.getInputStream());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }).start();
 
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -18,9 +31,9 @@ public class ChattingClient {
 
     }
 
-    public void sendMsg(Socket socket) throws IOException {
+    public static void sendMsg(OutputStream out) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        PrintWriter pw = new PrintWriter(socket.getOutputStream());
+        PrintWriter pw = new PrintWriter(out);
 
         String line = "";
         
@@ -31,11 +44,22 @@ public class ChattingClient {
             pw.println(line); //한줄 보내기
             pw.flush();
         }
+        pw.close();
+        br.close();
     }
 
-    public void recieveMsg(Socket socket) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        PrintWriter pw = new PrintWriter(socket.getOutputStream());
+    public static void recieveMsg(InputStream in) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(in));
 
+        String line = "";
+
+        while((line = br.readLine()) != null){
+            if("quit".equals(line)){
+                System.out.println("접속 종료");
+                break;
+            }
+            System.out.println(line);
+        }
+        br.close();
     }
 }

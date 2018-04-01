@@ -40,7 +40,7 @@ public class ChattingServer {
         }
     }
 
-    private static void broadcast(String line) {
+    private synchronized static void broadcast(String line) {
         for(Socket socket : list){
             PrintWriter pw = null;
             try {
