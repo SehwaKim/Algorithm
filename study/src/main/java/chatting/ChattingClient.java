@@ -7,8 +7,9 @@ public class ChattingClient implements Runnable {
 
     public void run(){
         try {
-            Socket socket = new Socket("localhost",8080);
+            Socket socket = new Socket("localhost",9090);
             System.out.println("서버에 접속되었습니다.");
+            System.out.println("채팅을 시작합니다. 종료: \"quit\" 입력");
 
             new Thread(()->{
                 try {

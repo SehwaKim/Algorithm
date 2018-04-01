@@ -12,11 +12,13 @@ public class ChattingServer {
     public ChattingServer(){
         ServerSocket server = null;
         try{
-            server = new ServerSocket(8080);
+            server = new ServerSocket(9090);
 
             Socket client = null;
             while(true) {
+                System.out.println("클라이언트를 기다립니다.");
                 client = server.accept();
+                System.out.println("클라이언트 입장");
                 list.add(client);
                 InputStream in = client.getInputStream();
 
