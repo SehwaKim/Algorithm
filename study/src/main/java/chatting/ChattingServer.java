@@ -1,9 +1,6 @@
 package chatting;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -21,11 +18,12 @@ public class ChattingServer {
             while(true) {
                 client = server.accept();
                 list.add(client);
+                InputStream in = client.getInputStream();
 
+                // client 메세지 읽는 스레드 1개 시작
                 new Thread(() -> {
                     try {
-                        broadcast(client);
-                        recieveMsg(client);
+                        recieveMsg(in);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -42,29 +40,35 @@ public class ChattingServer {
         }
     }
 
-    private void broadcast(Socket client) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        PrintWriter pw = new PrintWriter(client.getOutputStream());
-        String line = "";
-        while((line = br.readLine()) != null){
-            if("quit".equals(line)) {
-                break;
+    private static void broadcast(String line) {
+        for(Socket socket : list){
+            PrintWriter pw = null;
+            try {
+                pw = new PrintWriter(socket.getOutputStream());
+            } catch (IOException e) {
+                e.printStackTrace();
             }
             pw.println(line);
             pw.flush();
         }
-        pw.close();
-        br.close();
     }
 
-    private void recieveMsg(Socket client) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
+    private static void recieveMsg(InputStream in) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(in));
         String line = "";
-        while((line = br.readLine()) != null) {
+        /*while((line = br.readLine()) != null) {
             if ("quit".equals(line)) {
                 break;
             }
             System.out.println(line);
+        }*/
+        while(true){
+            if ("quit".equals(line)) {
+                break;
+            }
+            line = br.readLine();
+            System.out.println(line);
+            broadcast(line);
         }
         br.close();
     }
