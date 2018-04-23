@@ -13,6 +13,7 @@ public class VirusExample {
         for (int i=0; i<=computer*2; i++) {
             networks.add(new ArrayList<>());
         }
+        System.out.println(networks.size());
         for (int i=0; i<N; i++) {
             StringTokenizer st = new StringTokenizer(br.readLine());
             int com1 = Integer.parseInt(st.nextToken());
