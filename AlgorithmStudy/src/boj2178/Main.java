@@ -10,7 +10,7 @@ public class Main {
     static int n;
     static int m;
     static String[][] map;
-    static int level = 0;
+    static int level = 1;
 
     public static void main(String[] args) {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(System.in))) {
@@ -28,12 +28,11 @@ public class Main {
 
             bfsAll();
 
+            System.out.println(level);
+
 
         }catch (IOException e){}
     }
-
-//    bfs를 도는 queue의 사이즈를 체크해서 그 사이즈 만큼 똑같은 bfs를 돌고나면
-//    카운트를 하나씩 해주는 겁니다.
 
     private static void bfsAll() {
         Queue<Integer[]> queue = new LinkedList<>();
@@ -41,12 +40,16 @@ public class Main {
         map[0][0] = "2";
 
         while (!queue.isEmpty()) {
-            int queueSize = queue.size(); // 2
+            int queueSize = queue.size();
             for(int i=0;i<queueSize;i++){
                 Integer[] vertex = queue.remove();
                 bfs(queue, vertex);
             }
             level++;
+
+            if(map[n-1][m-1].equals("2")){
+                break;
+            }
         }
     }
 
