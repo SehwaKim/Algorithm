@@ -18,27 +18,30 @@ public class Main {
     // 정수 1은 익은 토마토, 정수 0은 익지 않은 토마토, 정수 -1은 토마토가 들어있지 않은 칸
 
     public static void main(String[] args) {
-        setData();
+        init();
         bfsAll();
 
-        // bfs 가 전혀 호출되지 않고 0이 없으면 0 출력
-        // 0이 있으면 -1 출력
-        if(level > 1){
-            if (isAnyZero()) {
-                System.out.println("-1");
-            } else {
-                System.out.println(level-1);
-            }
-        }else {
-            if (isAnyZero()) {
-                System.out.println("-1");
-            } else {
-                System.out.println("0");
-            }
+        // 맵에 0이 있으면 -1 출력 (모든 토마토를 익게 하지는 못하는 상태)
+        // 탐색된 적 없고 맵에 0도 없으면 0 출력 (모든 토마토 익은 상태)
+
+        if (zeroExist()) {
+            System.out.println("-1");
+            return;
         }
+
+        if (neverSearched()) {
+            System.out.println("0");
+            return;
+        }
+
+        System.out.println(level - 1);
     }
 
-    private static boolean isAnyZero() {
+    private static boolean neverSearched() {
+        return level < 2;
+    }
+
+    private static boolean zeroExist() {
         for(int i=0; i<n; i++){
             for(int j=0; j<m; j++){
                 if(map[i][j].equals("0")){
@@ -49,7 +52,7 @@ public class Main {
         return false;
     }
 
-    private static void setData() {
+    private static void init() {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(System.in))) {
             String line = br.readLine();
             String[] arr = line.split(" ");
@@ -88,28 +91,31 @@ public class Main {
     }
 
     private static void bfs(Integer[] vertex) {
-        if(vertex[1] - 1 >= 0){ // 동
-            if(map[vertex[0]][vertex[1] - 1].equals("0")){
-                queue.offer(new Integer[]{vertex[0], vertex[1] - 1});
-                map[vertex[0]][vertex[1] - 1] = "2";
+        int y = vertex[0];
+        int x = vertex[1];
+
+        if(x - 1 >= 0){
+            if(map[y][x - 1].equals("0")){
+                queue.offer(new Integer[]{y, x - 1});
+                map[y][x- 1] = "2";
             }
         }
-        if(vertex[1] + 1 < m){ // 서
-            if(map[vertex[0]][vertex[1] + 1].equals("0")){
-                queue.offer(new Integer[]{vertex[0], vertex[1] + 1});
-                map[vertex[0]][vertex[1] + 1] = "2";
+        if(x + 1 < m){
+            if(map[y][x + 1].equals("0")){
+                queue.offer(new Integer[]{y, x + 1});
+                map[y][x + 1] = "2";
             }
         }
-        if(vertex[0] + 1 < n){ // 남
-            if(map[vertex[0] + 1][vertex[1]].equals("0")){
-                queue.offer(new Integer[]{vertex[0] + 1, vertex[1]});
-                map[vertex[0] + 1][vertex[1]] = "2";
+        if(y + 1 < n){
+            if(map[y + 1][x].equals("0")){
+                queue.offer(new Integer[]{y + 1, x});
+                map[y + 1][x] = "2";
             }
         }
-        if(vertex[0] - 1 >= 0){ // 북
-            if(map[vertex[0] - 1][vertex[1]].equals("0")){
-                queue.offer(new Integer[]{vertex[0] - 1, vertex[1]});
-                map[vertex[0] - 1][vertex[1]] = "2";
+        if(y - 1 >= 0){
+            if(map[y - 1][x].equals("0")){
+                queue.offer(new Integer[]{y - 1, x});
+                map[y - 1][x] = "2";
             }
         }
     }
