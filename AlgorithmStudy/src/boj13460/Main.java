@@ -3,16 +3,15 @@ package boj13460;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.*;
 
 public class Main {
-    static int n;
-    static int m;
-    static char[][] board;
+    static char[][] map;
+    static Node hole;
     static Queue<State> queue = new LinkedList<>();
-    static int[] dy = { 1, -1, 0, 0 };
-    static int[] dx = { 0, 0, 1, -1 };
+    static int[] dy = {1, -1, 0, 0};
+    static int[] dx = {0, 0, 1, -1};
+    static Map<Node, List<Node>> discovered;
     static boolean reached;
     static boolean failed;
     static int totDepth;
@@ -27,7 +26,7 @@ public class Main {
         if (failed) {
             return -1;
         }
-        return totDepth;
+        return totDepth > 0 ? totDepth : -1;
     }
 
     private static void print(int result) {
@@ -36,112 +35,183 @@ public class Main {
 
     private static void bfsAll() {
         while (!queue.isEmpty()) {
-            if (reached || failed) {
+            if (reached) {
                 return;
             }
 
             State vertex = queue.poll();
+
+            if (vertex.depth > 10) {
+                failed = true;
+                return;
+            }
+
             bfs(vertex);
         }
     }
 
     private static void bfs(State vertex) {
-        int y = vertex.ry;
-        int x = vertex.rx;
-        int by = vertex.by;
-        int bx = vertex.bx;
+        int y = vertex.red.row;
+        int x = vertex.red.col;
+        int by = vertex.blue.row;
+        int bx = vertex.blue.col;
 
         for (int i = 0; i < 4; i++) {
-            int ny = y + dy[i];
-            int nx = x + dx[i];
-            if (ny < 0 || ny >= n || nx < 0 || nx >= m) {
+            int ny = y;
+            int nx = x;
+            int nby = by;
+            int nbx = bx;
+            boolean blockedByR = false;
+            boolean blockedByB = false;
+            boolean redInHole = false;
+            boolean blueInHole = false;
+
+            while (map[nby + dy[i]][nbx + dx[i]] != '#') { // 블루볼 이동 시키기
+                if (nby + dy[i] == y && nbx + dx[i] == x) { // 가려는 곳에 레드볼이 있다
+                    blockedByR = true;
+                    break;
+                }
+                if (map[nby + dy[i]][nbx + dx[i]] == 'O') {
+                    blueInHole = true;
+                    break;
+                }
+                nby += dy[i];
+                nbx += dx[i];
+            }
+
+            if (blueInHole) {
                 continue;
             }
 
-            if (board[ny][nx] == '#') {
-                continue;
+            while (map[ny + dy[i]][nx + dx[i]] != '#') { // 레드볼 이동 시키기
+                if (ny + dy[i] == by && nx + dx[i] == bx) { // 가려는 곳에 블볼이 있다
+                    blockedByB = true;
+                    break;
+                }
+                if (map[ny + dy[i]][nx + dx[i]] == 'O') {
+                    redInHole = true;
+                }
+
+                ny += dy[i];
+                nx += dx[i];
             }
 
-            for (int j = 0; j < 4; j++) {
-                int nby = by + dy[j];
-                int nbx = bx + dx[j];
-                if (nby < 0 || nby >= n || nbx < 0 || nbx >= m) {
-                    continue;
-                }
-
-                if (nby == ny && nbx == nx) {
-                    continue;
-                }
-
-                if (board[nby][nbx] != '.') {
-                    continue;
-                }
-
-                if (board[ny][nx] == 'O') {
-                    reached = true;
-                    totDepth = vertex.depth + 1;
-                    return;
-                }
-
-                queue.offer(new State(ny, nx, nby, nbx, vertex.depth + 1));
+            if (blockedByB) {
+                ny = nby - dy[i];
+                nx = nbx - dx[i];
+            } else if (blockedByR) {
+                nby = ny - dy[i];
+                nbx = nx - dx[i];
             }
-        }
 
-        if (!reached && vertex.depth == 10) {
-            failed = true;
-            return;
+            if (redInHole) {
+                if (blockedByR) {
+                    continue;
+                }
+                reached = true;
+                totDepth = vertex.depth + 1;
+                return;
+            }
+
+            Node newRed = new Node(ny, nx);
+            Node newBlue = new Node(nby, nbx);
+
+            if (discovered.containsKey(newRed)) {
+                if (discovered.get(newRed).contains(newBlue)) {
+                    continue;
+                }
+            } else {
+                discovered.put(newRed, new LinkedList<>());
+            }
+
+            discovered.get(newRed).add(newBlue);
+            queue.offer(new State(newRed, newBlue, vertex.depth + 1));
         }
     }
 
     private static void init() {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(System.in))) {
             String[] token = br.readLine().split("\\s");
-            n = parseInt(token[0]);
-            m = parseInt(token[1]);
-            board = new char[n][m];
-            int[] r_pos = new int[2];
-            int[] b_pos = new int[2];
+            int n = parseInt(token[0]);
+            int m = parseInt(token[1]);
+            map = new char[n][m];
+            Node red = null;
+            Node blue = null;
+            discovered = new HashMap<>();
 
-            br.readLine();
-            for (int i = 0; i < n - 2; i++) {
-                String line = br.readLine().substring(1, m - 1);
-                board[i] = line.toCharArray();
-                for (int j = 0; j < m - 2; j++) {
-                    if (board[i][j] == 'R') {
-                        r_pos[0] = i;
-                        r_pos[1] = j;
+            for (int i = 0; i < n; i++) {
+                map[i] = br.readLine().toCharArray();
+                for (int j = 0; j < m; j++) {
+                    if (map[i][j] == 'R') {
+                        red = new Node(i, j);
                     }
-                    if (board[i][j] == 'B') {
-                        b_pos[0] = i;
-                        b_pos[1] = j;
+                    if (map[i][j] == 'B') {
+                        blue = new Node(i, j);
+                    }
+                    if (map[i][j] == 'O') {
+                        hole = new Node(i, j);
                     }
                 }
             }
-            br.readLine();
-            n -= 2;
-            m -= 2;
-            queue.offer(new State(r_pos[0], r_pos[1], b_pos[0], b_pos[1], 0));
+
+            discovered.put(red, new LinkedList<>());
+            discovered.get(red).add(blue);
+            queue.offer(new State(red, blue, 0));
 
         } catch (IOException e) {}
     }
 
-    private static int parseInt(String value) {
-        return Integer.parseInt(value);
+    private static int parseInt(String s) {
+        return Integer.parseInt(s);
     }
 
     private static class State {
-        private final int ry;
-        private final int rx;
-        private final int by;
-        private final int bx;
+        private final Node red;
+        private final Node blue;
         private final int depth;
 
-        public State(int ry, int rx, int by, int bx, int depth) {
-            this.ry = ry;
-            this.rx = rx;
-            this.by = by;
-            this.bx = bx;
+        public State(Node red, Node blue, int depth) {
+            this.red = red;
+            this.blue = blue;
             this.depth = depth;
+        }
+    }
+
+    private static class Node {
+        private final int row;
+        private final int col;
+
+        public Node(int row, int col) {
+            this.row = row;
+            this.col = col;
+        }
+
+        @Override
+        public int hashCode() {
+            int h1 = row+"".hashCode();
+            int h2 = col+"".hashCode();
+            return h1 + h2;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            Node other = (Node) obj;
+            if (row != other.row) {
+                return false;
+            }
+            if (col != other.col) {
+                return false;
+            }
+            return true;
         }
     }
 }
