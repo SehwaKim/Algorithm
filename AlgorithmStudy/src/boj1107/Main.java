@@ -1,120 +1,50 @@
 package boj1107;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) {
-        // 100 에서 N 으로 가기위해서 몇 단계를 거쳐야 하는지 (1476과 아이디어 동일)
-        // 완전 탐색을 해라
-        // 이동할 수 있는 방법을 나눈다
-        // 1. 숫자로 한방에
-        // 2. 근접한 숫자로 가서 +++ 혹은 ---
-        // 3. +++으로만 or ---으로만
+    static boolean[] broken = new boolean[10]; // 버튼이 망가져 있으면 true, 아니면 false
 
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(System.in))) {
-            String nStr = br.readLine().trim();
-            int digit = nStr.length();
-            char[] charArray = nStr.toCharArray();
-            int [] ints = new int[digit];
-            int n = 0;
-            for (char c : charArray) {
-                ints[n] = parseInt(c+"");
-                n++;
+    private static int canMove(int channel) { // 가능하면 수의 길이를 리턴, 불가하면 0 리턴
+        int length = 0;
+        if (channel == 0) {
+            return broken[0] ? 0 : 1;
+        }
+        // 1의 자리부터 누를 수 있는지 검사한다
+        while (channel > 0) {
+            if (broken[channel % 10]) {
+                return 0;
             }
-            int N = parseInt(nStr);
-            int M = parseInt(br.readLine().trim());
-            boolean[] brokenBtn = new boolean[12]; // 0~9, + -> 10, - -> 11
-            if (M > 0) {
-                String[] str = br.readLine().split("\\s");
-                for (int i = 0; i < str.length; i++) {
-                    Character c = new Character(str[i].charAt(0));
-                    if (c == '+') {
-                        brokenBtn[10] = true;
-                    }
-                    if (c == '-') {
-                        brokenBtn[11] = true;
-                    }
-                    brokenBtn[parseInt(c+"")] = true;
-                }
-            }
-
-            int level = 0;
-            int curr = 100;
-            int[] picked = new int[digit];
-            List<Integer> levels = new ArrayList<>();
-
-            // 1. 숫자로 한방에
-            if (curr == N) {
-                System.out.println(level);
-                return;
-            }
-
-            // 2. 근접해서 + or -
-            for (int i = 0; i < ints.length; i++) { // 자리수만큼
-                if (!brokenBtn[ints[i]]) {
-                    picked[i] = ints[i];
-                    level++;
-                } else {
-                    int amount = 1;
-                    while (true) {
-                        boolean available = false;
-                        if (ints[i] + amount < brokenBtn.length) {
-                            if (!brokenBtn[ints[i] + amount]) {
-                                picked[i] = ints[i] + amount;
-                                level++;
-//                              System.out.println("+"+amount);
-                                available = true;
-                            }
-                        }
-                        if ((ints[i] - amount) > 0) {
-                            if (!brokenBtn[ints[i] - amount]) {
-                                if (!available) {
-                                    picked[i] = ints[i] - amount;
-                                    level++;
-//                                    System.out.println("-"+amount);
-                                    available = true;
-                                }
-                            }
-                        }
-                        if (available) {
-                            break;
-                        }
-                        amount++;
-                    }
-                }
-            }// 이 for 문이 끝나면 picked 에 값이 다 채워진 상태 혹은 쓸 수 있는 숫자버튼이 없으면 아무것도 안채워진 상태
-
-//            System.out.println("====="+level);
-            StringBuilder builder = new StringBuilder();
-            for (int num : picked) {
-                builder.append(num);
-            }
-            int incompleteNum = parseInt(builder.toString());
-//            System.out.println("incompleteNum: "+incompleteNum);
-            level += Math.abs(incompleteNum - N);
-            levels.add(level);
-            level = 0;
-
-            // 3. +, - 으로만
-            if (!brokenBtn[10] || !brokenBtn[11]) {
-                level += Math.abs(100 - N);
-                levels.add(level);
-            }
-
-            Collections.sort(levels);
-//            System.out.println(levels);
-            System.out.println(levels.get(0));
-
-
-        }catch (IOException e){}
+            length += 1;
+            channel /= 10;
+        }
+        return length;
     }
 
-    private static int parseInt(String s) {
-        return Integer.parseInt(s);
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        int n = scanner.nextInt();
+        int m = scanner.nextInt();
+
+        for (int i = 0; i < m; i++) {
+            broken[scanner.nextInt()] = true; // 버튼이 망가져 있으면 true, 아니면 false
+        }
+
+        // 100에서 n까지 숫자 버튼을 누르지 않고, +와 -만을 눌러서 이동하는 코드
+        int answer = Math.abs(n - 100); // n >= 100
+
+        // 이동할 채널 c를 결정한 다음, 가능하면, 버튼을 총 몇번 눌러야 하는지
+        // 진짜 literally 모든 경우를 다 세네
+        for (int i = 0; i <= 1000000; i++) { //숫자 버튼으로 이동하는 채널
+            int c = i;
+            int length = canMove(c); // 이 채널을 리모콘으로 누를수있는가?
+            if (length > 0) {
+                int press = Math.abs(c - n); // +나 -를 몇 번 눌러야 하는지 계산
+                if (answer > length + press) {
+                    answer = length + press;
+                }
+            }
+        }
+        System.out.println(answer);
     }
 }
