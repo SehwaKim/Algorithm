@@ -16,6 +16,20 @@ import java.util.Arrays;
 
 // 다트게임 - 하
 public class Ex02 {
+    public enum Bonus {
+        S(1), D(2), T(3);
+
+        int val;
+
+        Bonus(int val) {
+            this.val = val;
+        }
+
+        int getVal() {
+            return val;
+        }
+    }
+
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String input = br.readLine();
@@ -44,16 +58,7 @@ public class Ex02 {
         // 제곱승 처리
         int[] tempVal = new int[3];
         for (int i = 0; i < 3; i++) {
-            int pow = 0;
-            if (bonus[i] == 'S') {
-                pow = 1;
-            }
-            if (bonus[i] == 'D') {
-                pow = 2;
-            }
-            if (bonus[i] == 'T') {
-                pow = 3;
-            }
+            int pow = Bonus.valueOf(bonus[i]+"").val;
             tempVal[i] = (int) Math.pow(score[i], pow);
         }
 
