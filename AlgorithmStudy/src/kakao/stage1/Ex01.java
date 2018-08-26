@@ -8,11 +8,13 @@ import java.util.Arrays;
 5
 [9, 20, 28, 18, 11]
 [30, 1, 21, 17, 28]
+["#####","# # #", "### #", "#  ##", "#####"]
 
 
 6
 [46, 33, 33, 22, 31, 50]
 [27, 56, 19, 14, 14, 10]
+["######", "###  #", "##  ##", " ####  ", " #####", "### # "]
 * */
 public class Ex01 {
     // 비밀지도 난이도 하
@@ -41,19 +43,11 @@ public class Ex01 {
             String result = "";
             String a = arr1[i];
             String b = arr2[i];
-            int sizeOfA = a.length();
-            int sizeOfB = b.length();
             // 자리수 맞춰주기
-            if (sizeOfA < n) {
-                for (int j = 0; j < n - sizeOfA; j++) {
-                    a = "0" + a;
-                }
-            }
-            if (sizeOfB < n) {
-                for (int j = 0; j < n - sizeOfB; j++) { // b의 길이가 자꾸 변하니까.
-                    b = "0" + b;
-                }
-            }
+            a = String.format("%" + n + "s", a);
+            a = a.replaceAll(" ", "0");
+            b = String.format("%" + n + "s", b);
+            b = b.replaceAll(" ", "0");
 
             // 비트단위로 OR 연산
             for (int j = 0; j < n; j++) {
