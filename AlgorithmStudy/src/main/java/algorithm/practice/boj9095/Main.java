@@ -1,4 +1,4 @@
-package boj9095;
+package algorithm.practice.boj9095;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,7 +13,7 @@ public class Main {
             cases[i] = Integer.parseInt(br.readLine());
         }
 
-        // counting 에 해당하는 문제
+        // counting 에 해당하는 문제 (경우의 수)
         // 점화식을 세우기위해 n=1, n=2 ... 관찰하고
         // 각 항 사이의 관계를 관찰해서 식으로 만들어야함
         // dp[n]은 n을 1,2,3의 합으로 나타내는 방법의 수 --> n을 만드는데 필요했던 조합의 수!
